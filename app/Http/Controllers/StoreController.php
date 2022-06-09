@@ -25,8 +25,8 @@ class StoreController extends Controller
      */
     public function store(Request $request)
     {
-        $name = $request->input('name');
         $user = $request->user();
+        $name = $request->input('name');
         $store = new Store();
         $store->name = $name;
         $store->save();
@@ -57,10 +57,20 @@ class StoreController extends Controller
     {
         $user = $request->user();
         $store = Store::find($id);
-        return response()->json($user->stores());
-        $store->name = $request->input('name');
-        $store->save();
-        return response()->json("save successful", 200);
+        $isFound = false;
+        foreach ($store->owners as $u) {
+            if ($user->id === $u->pivot->user_id) {
+                $isFound = true;
+                break;
+            }
+        }
+        if ($isFound) {
+            $store->name = $request->input('name');
+            $store->save();
+            return response()->json("save successful", 200);
+        } else {
+            return response()->json("You're not owner of this store", 401);
+        }
     }
 
     /**

@@ -34,7 +34,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/stores/{id}', [StoreController::class, 'destroy']);
 });
 
-Route::apiResource('stores', StoreController::class);
+// Route::apiResource('stores', StoreController::class);
 
 
 // Route::get('/login', function () {
