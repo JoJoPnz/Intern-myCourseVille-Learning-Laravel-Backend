@@ -26,9 +26,11 @@ class StoreController extends Controller
     public function store(Request $request)
     {
         $name = $request->input('name');
+        $user = $request->user();
         $store = new Store();
         $store->name = $name;
         $store->save();
+        $store->owners()->attach($user->id);
         return response()->json($store, 200);
     }
 
@@ -53,7 +55,9 @@ class StoreController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $user = $request->user();
         $store = Store::find($id);
+        return response()->json($user->stores());
         $store->name = $request->input('name');
         $store->save();
         return response()->json("save successful", 200);

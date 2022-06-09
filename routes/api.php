@@ -1,9 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -25,6 +25,17 @@ Route::get('/login', function () {
     echo "LOGIN PAGE";
 })->name('login');
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
+
+
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/stores', [StoreController::class, 'store']);
+    Route::patch('/stores/{id}', [StoreController::class, 'update']);
+    Route::delete('/stores/{id}', [StoreController::class, 'destroy']);
+});
+
+Route::apiResource('stores', StoreController::class);
+
 
 // Route::get('/login', function () {
 //     return response()->json('go to login', 200);
