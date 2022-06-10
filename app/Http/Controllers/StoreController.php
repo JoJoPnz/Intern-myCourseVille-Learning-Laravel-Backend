@@ -98,7 +98,17 @@ class StoreController extends Controller
         if ($user->cannot('delete', $store)) {
             return response()->json("You don't own this store.", 403);
         }
-        return 'Assume Destroyed';
+        // delete relation between every books and that store
+        foreach ($store->books as $book) {
+            $book->store()->dissociate();
+            $book->save();
+        };
+
+        // delete every user from the store
+        $store->owners()->detach();
+
+
+        return "Store id : $id is deleted";
         // 2.
         // $store = Store::find($id);
         // $store->delete();
