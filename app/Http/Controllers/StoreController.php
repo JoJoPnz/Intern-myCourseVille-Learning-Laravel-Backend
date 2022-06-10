@@ -14,7 +14,7 @@ class StoreController extends Controller
      */
     public function index(Request $request)
     {
-        return response()->json(Store::all(), 200);
+        return response()->json(['User' => $request->user()->id, 'AllStores' => $request->user()->stores], 200);
     }
 
     /**
@@ -56,34 +56,55 @@ class StoreController extends Controller
     public function update(Request $request, $id)
     {
         $user = $request->user();
-        $store = Store::find($id);
-        $isFound = false;
-        foreach ($store->owners as $u) {
-            if ($user->id === $u->pivot->user_id) {
-                $isFound = true;
-                break;
-            }
+        $store = Store::findOrFail($id);
+        if ($user->cannot('update', $store)) {
+            return response()->json("You don't own this store.", 403);
         }
-        if ($isFound) {
-            $store->name = $request->input('name');
-            $store->save();
-            return response()->json("save successful", 200);
-        } else {
-            return response()->json("You're not owner of this store", 403);
-        }
+        $store->name = $request->input('name');
+        $store->save();
+        return response()->json("Update Store name to $store->name successful : Action by user $user->id", 200);
+
+        // 1. not using policy
+        // $user = $request->user();
+        // $store = Store::find($id);
+        // $isFound = false;
+        // foreach ($store->owners as $u) {
+        //     if ($user->id === $u->pivot->user_id) {
+        //         $isFound = true;
+        //         break;
+        //     }
+        // }
+        // if ($isFound) {
+        //     $store->name = $request->input('name');
+        //     $store->save();
+        //     return response()->json("save successful", 200);
+        // } else {
+        //     return response()->json("You're not owner of this store", 403);
+        // }
+
     }
 
     /**
      * Remove the specified resource from storage.
-     *
+     * 
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        // 1. using policy
+        $user = $request->user();
+        $store = Store::findOrFail($id);
+        if ($user->cannot('delete', $store)) {
+            return response()->json("You don't own this store.", 403);
+        }
+        return 'Assume Destroyed';
+        // 2.
         // $store = Store::find($id);
         // $store->delete();
-        return response()->json(Store::destroy($id), 200);
         // return response()->json("delete success", 200);
+
+        // 3.
+        // return response()->json(Store::destroy($id), 200);
     }
 }
