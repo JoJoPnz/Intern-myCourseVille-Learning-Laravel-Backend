@@ -69,7 +69,7 @@ class StoreController extends Controller
             $store->save();
             return response()->json("save successful", 200);
         } else {
-            return response()->json("You're not owner of this store", 401);
+            return response()->json("You're not owner of this store", 403);
         }
     }
 

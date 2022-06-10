@@ -27,7 +27,7 @@ Route::get('/login', function () {
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 
-
+Route::get('/stores', [StoreController::class, 'index']);
 Route::middleware('auth:api')->group(function () {
     Route::post('/stores', [StoreController::class, 'store']);
     Route::patch('/stores/{id}', [StoreController::class, 'update']);
