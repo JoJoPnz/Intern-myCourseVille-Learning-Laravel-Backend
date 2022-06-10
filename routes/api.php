@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookController;
+use App\Http\Controllers\BookTypeController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,12 +28,15 @@ Route::get('/login', function () {
 })->name('login');
 Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
+Route::post('/bookTypes', [BookTypeController::class, 'store']);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/stores', [StoreController::class, 'index']);
     Route::post('/stores', [StoreController::class, 'store']);
     Route::patch('/stores/{id}', [StoreController::class, 'update']);
     Route::delete('/stores/{id}', [StoreController::class, 'destroy']);
+
+    Route::post('/books', [BookController::class, 'store']);
 });
 
 // Route::apiResource('stores', StoreController::class);
