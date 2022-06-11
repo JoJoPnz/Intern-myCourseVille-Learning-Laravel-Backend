@@ -33,8 +33,8 @@ Route::post('/bookTypes', [BookTypeController::class, 'store']);
 Route::middleware('auth:api')->group(function () {
     Route::get('/stores', [StoreController::class, 'index']);
     Route::post('/stores', [StoreController::class, 'store']);
-    Route::patch('/stores/{id}', [StoreController::class, 'update']);
-    Route::delete('/stores/{id}', [StoreController::class, 'destroy']);
+    Route::patch('/stores/{store}', [StoreController::class, 'update']);
+    Route::delete('/stores/{store}', [StoreController::class, 'destroy']);
 
     Route::post('/books', [BookController::class, 'store']);
     Route::get('/books', [BookController::class, 'index']);

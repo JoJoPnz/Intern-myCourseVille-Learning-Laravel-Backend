@@ -56,10 +56,9 @@ class StoreController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Store $store)
     {
         $user = $request->user();
-        $store = Store::findOrFail($id);
         if ($user->cannot('update', $store)) {
             return response()->json("You don't own this store.", 403);
         }
@@ -93,11 +92,10 @@ class StoreController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, Store $store)
     {
         // 1. using policy
         $user = $request->user();
-        $store = Store::findOrFail($id);
         if ($user->cannot('delete', $store)) {
             return response()->json("You don't own this store.", 403);
         }
@@ -111,7 +109,7 @@ class StoreController extends Controller
         $store->owners()->detach();
 
 
-        return "Store id : $id is deleted";
+        return "Store $store->name is deleted";
         // 2.
         // $store = Store::find($id);
         // $store->delete();
