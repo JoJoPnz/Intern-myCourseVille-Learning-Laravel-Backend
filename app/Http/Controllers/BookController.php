@@ -14,9 +14,18 @@ class BookController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $user = $request->user();
+        $all_book = array();
+
+        foreach ($user->stores as $store) {
+            foreach ($store->books as $book) {
+                array_push($all_book, $book);
+            }
+        }
+
+        return response()->json(['User' => $user, 'allBooks' => $all_book], 200);
     }
 
     /**

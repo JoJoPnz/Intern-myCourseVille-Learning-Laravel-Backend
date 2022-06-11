@@ -37,6 +37,7 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/stores/{id}', [StoreController::class, 'destroy']);
 
     Route::post('/books', [BookController::class, 'store']);
+    Route::get('/books', [BookController::class, 'index']);
 });
 
 // Route::apiResource('stores', StoreController::class);

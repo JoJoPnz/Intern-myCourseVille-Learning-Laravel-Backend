@@ -25,8 +25,11 @@ class StoreController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate(['name' => ['required', 'string']]);
+
         $user = $request->user();
-        $name = $request->input('name');
+        $name = $request->name;
+
         $store = new Store();
         $store->name = $name;
         $store->save();
