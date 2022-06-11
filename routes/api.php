@@ -17,32 +17,31 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::middleware('auth:api')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
 Route::get('/login', function () {
     echo "LOGIN PAGE";
 })->name('login');
-Route::get('/logout', [AuthController::class, 'logout'])->middleware('auth:api');
 
 Route::post('/bookTypes', [BookTypeController::class, 'store']);
 
+
+// AuthController
+Route::controller(AuthController::class)->group(function () {
+    Route::get('/logout', 'logout')->middleware('auth:api');;
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
+});
+
+
 Route::middleware('auth:api')->group(function () {
-    Route::get('/stores', [StoreController::class, 'index']);
-    Route::post('/stores', [StoreController::class, 'store']);
-    Route::patch('/stores/{store}', [StoreController::class, 'update']);
-    Route::delete('/stores/{store}', [StoreController::class, 'destroy']);
+    Route::apiResource('stores', StoreController::class);
 
     Route::post('/books', [BookController::class, 'store']);
     Route::get('/books', [BookController::class, 'index']);
 });
 
-// Route::apiResource('stores', StoreController::class);
-
-
-// Route::get('/login', function () {
-//     return response()->json('go to login', 200);
-// })->name('login');
