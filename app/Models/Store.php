@@ -9,6 +9,10 @@ class Store extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+    ];
+
     public function telephones()
     {
         return $this->hasMany(Telephone::class);

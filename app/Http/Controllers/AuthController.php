@@ -25,7 +25,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-        return response(["message" => "User created successful", "User" => $user], 200);
+        return response()->json(["message" => "User created successful", "User" => $user], 200);
     }
 
     public function login(Request $request)
@@ -38,9 +38,9 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $user = User::where('email', $request->email)->firstOrFail();
             $token = $user->createToken('Auth Token')->accessToken;
-            return response($token, 200);
+            return response()->json($token, 200);
         } else {
-            return response('Login FAIL', 403);
+            return response()->json('Login FAIL', 403);
         }
         // $user = User::whereUsername($request->username)->findOrFail();
         // if (!Hash::check($request->password, $user->password)) abort(403);
@@ -58,6 +58,6 @@ class AuthController extends Controller
         // Revoke all of the token's refresh tokens...
         $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($tokenId);
 
-        return response('Revoke Token Successful', 200);
+        return response()->json('Revoke Token Successful', 200);
     }
 }

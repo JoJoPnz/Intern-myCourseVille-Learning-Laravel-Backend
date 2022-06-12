@@ -28,11 +28,9 @@ class StoreController extends Controller
         $request->validate(['name' => ['required', 'string']]);
 
         $user = $request->user();
-        $name = $request->name;
-
-        $store = new Store();
-        $store->name = $name;
-        $store->save();
+        $store = Store::create([
+            'name' => $request->name,
+        ]);
         $store->owners()->attach($user->id);
         return response()->json($store, 200);
     }
@@ -45,8 +43,7 @@ class StoreController extends Controller
      */
     public function show($id)
     {
-        $store = Store::findOrFail($id);
-        return response()->json($store, 200);
+        //
     }
 
     /**
@@ -58,10 +55,11 @@ class StoreController extends Controller
      */
     public function update(Request $request, Store $store)
     {
+        $request->validate(['name' => ['required', 'string']]);
         $user = $request->user();
-        if ($user->cannot('update', $store)) {
-            return response()->json("You don't own this store.", 403);
-        }
+
+        $this->authorize('update', $store);
+
         $store->name = $request->input('name');
         $store->save();
         return response()->json("Update Store name to $store->name successful : Action by user $user->id", 200);
@@ -94,11 +92,10 @@ class StoreController extends Controller
      */
     public function destroy(Request $request, Store $store)
     {
-        // 1. using policy
         $user = $request->user();
-        if ($user->cannot('delete', $store)) {
-            return response()->json("You don't own this store.", 403);
-        }
+
+        $this->authorize('delete', $store);
+
         // delete relation between every books and that store
         foreach ($store->books as $book) {
             $book->store()->dissociate();
@@ -108,8 +105,8 @@ class StoreController extends Controller
         // delete every user from the store
         $store->owners()->detach();
 
+        return response()->json("Store $store->name is deleted", 200);
 
-        return "Store $store->name is deleted";
         // 2.
         // $store = Store::find($id);
         // $store->delete();
