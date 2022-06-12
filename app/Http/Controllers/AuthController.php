@@ -25,31 +25,29 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+        return response(["message" => "User created successful", "User" => $user], 200);
     }
 
     public function login(Request $request)
     {
+        $request->validate([
+            'email' => ['required', 'string', 'email', 'max:255'],
+            'password' => ['required'],
+        ]);
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
-            // Authentication passed...
-            // return redirect()->intended('dashboard');
             $user = User::where('email', $request->email)->firstOrFail();
             $token = $user->createToken('Auth Token')->accessToken;
-            return response()->json($token, 200);
-            // return response()->json(['token' => $token, 'tokenId' => $user->token()->id], 200);
-            // return response()->json('Login SUCCESS', 200);
+            return response($token, 200);
         } else {
-            return response()->json('Login FAIL', 403);
+            return response('Login FAIL', 403);
         }
         // $user = User::whereUsername($request->username)->findOrFail();
         // if (!Hash::check($request->password, $user->password)) abort(403);
-        // $token = $user->createToken('Token Name')->accessToken;
-        // return response()->json(['token' => $token], 200);
     }
 
     public function logout(Request $request)
     {
-        // $request->user()->tokens()->delete();
         $tokenId = $request->user()->token()->id;
         $tokenRepository = app(TokenRepository::class);
         $refreshTokenRepository = app(RefreshTokenRepository::class);
@@ -58,8 +56,8 @@ class AuthController extends Controller
         $tokenRepository->revokeAccessToken($tokenId);
 
         // Revoke all of the token's refresh tokens...
-        // $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($tokenId);
+        $refreshTokenRepository->revokeRefreshTokensByAccessTokenId($tokenId);
 
-        return response()->json('Revoke Token Successful', 200);
+        return response('Revoke Token Successful', 200);
     }
 }
