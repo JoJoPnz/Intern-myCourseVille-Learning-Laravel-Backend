@@ -41,7 +41,5 @@ Route::controller(AuthController::class)->group(function () {
 Route::middleware('auth:api')->group(function () {
     Route::apiResource('stores', StoreController::class);
 
-    Route::post('/books', [BookController::class, 'store']);
-    Route::get('/books', [BookController::class, 'index']);
+    Route::apiResource('books', BookController::class);
 });
-

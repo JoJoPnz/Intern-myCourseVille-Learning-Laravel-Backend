@@ -30,7 +30,7 @@ class StorePolicy
      */
     public function view(User $user, Store $store)
     {
-        //
+        return $store->owners->map->id->contains($user->id);
     }
 
     /**
@@ -41,7 +41,7 @@ class StorePolicy
      */
     public function create(User $user)
     {
-        //
+        // return 1;
     }
 
     /**

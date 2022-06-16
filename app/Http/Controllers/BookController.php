@@ -46,19 +46,25 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => ['required', 'string'],
+            'book_type' => ['required', 'string'],
+            'store_id' => ['required', 'integer'],
+            'price' => ['required', 'integer']
+        ]);
+        $user = $request->user();
         $book_type = BookType::where('name', $request->book_type)->firstOrFail();
-        $store = Store::where('name', $request->store_name)->firstOrFail();
+        $store = Store::where('id', $request->store_id)->firstOrFail();
 
-        // if user cann't create book on the store (user don't own that store)
-        if ($request->user()->cannot('create', [Book::class, $store])) {
-            return response()->json("You don't own this store.", 403);
-        }
+        $this->authorize('create', [Book::class, $store]);
+
         $book = new Book();
         $book->name = $request->name;
         $book->price = $request->price;
         $book->bookType()->associate($book_type);
         $book->store()->associate($store);
         $book->save();
+
         return response()->json(["Book Created" => $book], 200);
     }
 
@@ -91,9 +97,16 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Book $book)
     {
-        //
+        $request->validate(['name' => ['required', 'string']]);
+        $user = $request->user();
+
+        $this->authorize('update', $book);
+
+        $book->name = $request->input('name');
+        $book->save();
+        return response()->json("Update Book name to $book->name successful : Action by user $user->id", 200);
     }
 
     /**
@@ -102,8 +115,15 @@ class BookController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, Book $book)
     {
-        //
+        $user = $request->user();
+
+        $this->authorize('delete', $book);
+
+        $book->store()->dissociate();
+        // $book->bookType()->dissociate();
+        $book->save();
+        return response()->json("Book $book->name is deleted", 200);
     }
 }

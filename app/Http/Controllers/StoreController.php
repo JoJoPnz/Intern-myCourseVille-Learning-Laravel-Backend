@@ -41,9 +41,10 @@ class StoreController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Store $store)
     {
-        //
+        $this->authorize('view', $store);
+        return response()->json(['books' => $store->books], 200);
     }
 
     /**
@@ -104,7 +105,7 @@ class StoreController extends Controller
 
         // delete every user from the store
         $store->owners()->detach();
-
+        $store->delete();
         return response()->json("Store $store->name is deleted", 200);
 
         // 2.

@@ -55,7 +55,7 @@ class BookPolicy
      */
     public function update(User $user, Book $book)
     {
-        //
+        return $book->store->owners->map->id->contains($user->id);
     }
 
     /**
@@ -67,7 +67,7 @@ class BookPolicy
      */
     public function delete(User $user, Book $book)
     {
-        //
+        return $book->store->owners->map->id->contains($user->id);
     }
 
     /**
